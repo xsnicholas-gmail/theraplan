@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export function IntakeForm() {
@@ -8,13 +8,15 @@ export function IntakeForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  async function submit(formData: FormData) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
     setLoading(true);
     setError("");
     const payload = {
       age: formData.get("age"),
       primary_condition: formData.get("primary_condition"),
-      pain_areas: String(formData.get("pain_areas") || "").split(","),
+      pain_areas: String(formData.get("pain_areas") || "").split(",").map((area) => area.trim()).filter(Boolean),
       goals: formData.getAll("goals"),
       frequency_days_per_week: formData.get("frequency_days_per_week"),
       plan_duration_weeks: formData.get("plan_duration_weeks"),
@@ -35,7 +37,7 @@ export function IntakeForm() {
   }
 
   return (
-    <form action={submit} className="card space-y-4">
+    <form onSubmit={submit} className="card space-y-4">
       <div>
         <p className="eyebrow">Create your plan</p>
         <h2>Personalised intake</h2>
@@ -53,8 +55,8 @@ export function IntakeForm() {
       </div>
       <fieldset><legend>Equipment</legend><div className="checks"><label><input type="radio" name="equipment_access" value="home" defaultChecked />Home</label><label><input type="radio" name="equipment_access" value="gym" />Gym</label><label><input type="radio" name="equipment_access" value="both" />Both</label></div></fieldset>
       <label>Notes<textarea name="notes" defaultValue="Desk job, symptoms worse after sitting." /></label>
-      {error && <p className="error">{error} <button type="submit">Retry</button></p>}
-      <button className="primary" disabled={loading}>{loading ? "Building your plan…" : "Generate my plan"}</button>
+      {error && <p className="error">{error}</p>}
+      <button className="primary" type="submit" disabled={loading} aria-busy={loading}>{loading ? "Building your plan…" : "Generate my plan"}</button>
     </form>
   );
 }

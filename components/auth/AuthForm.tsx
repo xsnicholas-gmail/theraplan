@@ -29,13 +29,14 @@ export function AuthForm() {
     const supabase = createClient();
 
     try {
+      const emailRedirectTo = `${window.location.origin}/auth/callback`;
       const result = mode === "sign-up"
-        ? await supabase.auth.signUp({ email, password })
+        ? await supabase.auth.signUp({ email, password, options: { emailRedirectTo } })
         : await supabase.auth.signInWithPassword({ email, password });
 
       if (result.error) throw result.error;
       if (mode === "sign-up" && !result.data.session) {
-        setMessage("Check your email to confirm your account, then sign in.");
+        setMessage("Check your email to confirm your account. The link will return you to TheraPlan.");
         return;
       }
       router.push("/account");

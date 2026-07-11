@@ -36,7 +36,12 @@ export default async function Home() {
         <article><strong>02</strong><span>Program</span><small>Therapy sessions and targets</small></article>
         <article><strong>03</strong><span>Execute</span><small>Timer, reps, feedback</small></article>
       </section>
-      {demoPlan ? <PlanOverview plan={demoPlan} /> : <div className="card"><h2>No demo plan found</h2><p className="muted">Apply the Supabase migration and seed data, then refresh.</p></div>}
+      <section className="mode-grid" aria-label="TheraPlan modes">
+        <a className="mode-card" href="/coach"><strong>Coach</strong><span>Discuss pain, schedule changes, and plan feedback.</span></a>
+        <a className="mode-card" href="/library"><strong>Exercise library</strong><span>Learn why each rehab movement is in your plan.</span></a>
+        <a className="mode-card" href="/progress"><strong>Progress</strong><span>Review completed sessions, effort, and recovery consistency.</span></a>
+      </section>
+      <div id="plan">{demoPlan ? <PlanOverview plan={demoPlan} /> : <div className="card"><h2>No demo plan found</h2><p className="muted">Apply the Supabase migration and seed data, then refresh.</p></div>}</div>
       <div id="intake"><IntakeForm /></div>
     </main>
   );

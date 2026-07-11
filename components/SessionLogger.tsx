@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { SessionDetail } from "../lib/supabase";
 
@@ -13,15 +13,27 @@ export function SessionLogger({ session }: { session: SessionDetail }) {
   const [seconds, setSeconds] = useState(0);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const timerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) window.clearInterval(timerRef.current);
+    };
+  }, []);
 
   function updateSet(index: number, key: "reps_completed" | "weight_kg", value: string) {
     setSets((current) => current.map((set, i) => i === index ? { ...set, [key]: key === "reps_completed" ? Number(value) : value } : set));
   }
 
-  async function startTimer(rest: number) {
+  function startTimer(rest: number) {
+    if (timerRef.current) window.clearInterval(timerRef.current);
     setSeconds(rest);
-    const interval = window.setInterval(() => setSeconds((value) => {
-      if (value <= 1) { window.clearInterval(interval); return 0; }
+    timerRef.current = window.setInterval(() => setSeconds((value) => {
+      if (value <= 1) {
+        if (timerRef.current) window.clearInterval(timerRef.current);
+        timerRef.current = null;
+        return 0;
+      }
       return value - 1;
     }), 1000);
   }
@@ -30,7 +42,7 @@ export function SessionLogger({ session }: { session: SessionDetail }) {
     setSaving(true); setError("");
     try {
       const response = await fetch("/api/session-log", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ session_id: session.id, perceived_effort: effort, feedback, sets }) });
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || "Save failed");
       router.push(`/plan/${session.plan_id}`);
       router.refresh();

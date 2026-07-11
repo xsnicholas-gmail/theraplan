@@ -5,8 +5,11 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 const navItems = [
-  { href: "/", label: "Dashboard", icon: "🏠" },
-  { href: "/#intake", label: "Create plan", icon: "📝" },
+  { href: "/", label: "Today", icon: "🏠" },
+  { href: "/#plan", label: "Plan", icon: "📅" },
+  { href: "/coach", label: "Coach", icon: "💬" },
+  { href: "/progress", label: "Progress", icon: "📈" },
+  { href: "/library", label: "Library", icon: "📚" },
   { href: "/account", label: "Account", icon: "👤" },
   { href: "/login", label: "Sign in", icon: "🔐" },
 ];
@@ -17,7 +20,8 @@ export function AppNavigation() {
 
   function isActive(href: string) {
     if (href === "/") return pathname === "/";
-    return pathname.startsWith(href.split("#")[0]);
+    if (href.includes("#")) return pathname === "/";
+    return pathname === href || pathname.startsWith(`${href}/`);
   }
 
   return (
@@ -39,10 +43,10 @@ export function AppNavigation() {
           <nav className="nav-links" aria-label="Primary navigation">
             {navItems.map((item) => <Link key={item.href} href={item.href} className={isActive(item.href) ? "active" : ""} onClick={() => setOpen(false)}><span>{item.icon}</span>{item.label}</Link>)}
           </nav>
-          <div className="sidebar-note">
+          <Link href="/#plan" className="sidebar-note" onClick={() => setOpen(false)}>
             <p className="eyebrow">Today</p>
             <strong>Log reps, finish sessions, adapt next targets.</strong>
-          </div>
+          </Link>
         </div>
       </aside>
       {open && <button className="nav-scrim no-print" type="button" aria-label="Close navigation" onClick={() => setOpen(false)} />}

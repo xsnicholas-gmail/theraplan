@@ -22,18 +22,22 @@ export function RescheduleSession({ sessionId, currentDay }: { sessionId: string
   function reschedule() {
     setMessage("");
     startTransition(async () => {
-      const response = await fetch("/api/reschedule", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ session_id: sessionId, day_of_week: day }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        setMessage(data.error || "Could not reschedule session.");
-        return;
+      try {
+        const response = await fetch("/api/reschedule", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ session_id: sessionId, day_of_week: day }),
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          setMessage(data.error || "Could not reschedule session.");
+          return;
+        }
+        setMessage("Session moved.");
+        router.refresh();
+      } catch {
+        setMessage("Could not reschedule session. Check your connection and try again.");
       }
-      setMessage("Session moved.");
-      router.refresh();
     });
   }
 

@@ -6,12 +6,16 @@ import { createClient } from "../../lib/supabase/client";
 
 type Mode = "sign-in" | "sign-up";
 
-export function AuthForm() {
+const callbackErrors: Record<string, string> = {
+  auth_callback_failed: "We could not complete that email confirmation link. Please request a new link or sign in again.",
+};
+
+export function AuthForm({ callbackError }: { callbackError?: string }) {
   const router = useRouter();
   const [mode, setMode] = useState<Mode>("sign-in");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(callbackError ? callbackErrors[callbackError] || callbackErrors.auth_callback_failed : "");
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

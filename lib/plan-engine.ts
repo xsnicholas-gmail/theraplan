@@ -31,6 +31,7 @@ export async function createPlanFromIntake(intake: IntakeInput) {
   const summary = `A personalised ${intake.equipment_access}-based plan focused on ${intake.goals.join(", ")} with ${intake.frequency_days_per_week} sessions per week.`;
   const { data: plan, error: planError } = await supabase.from("plans").insert({ intake_id: intakeRow.id, title, summary, status: "active", summary_source: "rule-engine", summary_confidence: 0.82 }).select("id").single();
   if (planError) throw planError;
+  await supabase.from("audit_logs").insert({ actor_type: "system", action: "generate_plan", object_type: "plan", object_id: plan.id, before_json: null, after_json: { intake_id: intakeRow.id, title, summary, frequency_days_per_week: intake.frequency_days_per_week, plan_duration_weeks: intake.plan_duration_weeks } });
 
   const exerciseIds: string[] = [];
   for (const exercise of exerciseLibrary) {

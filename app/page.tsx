@@ -18,5 +18,5 @@ async function getDemoPlan() {
 
 export default async function Home() {
   const demoPlan = await getDemoPlan();
-  return <main className="container space-y-8"><header className="top"><div><p className="eyebrow">TheraPlan</p><h1>Adaptive physiotherapy you can actually complete.</h1></div><a href="#intake" className="primary linkbutton">Create plan</a></header>{demoPlan ? <PlanOverview plan={demoPlan} /> : <div className="card"><h2>No demo plan found</h2><p className="muted">Apply the Supabase migration and seed data, then refresh.</p></div>}<div id="intake"><IntakeForm /></div></main>;
+  return <main className="container space-y-8"><header className="top"><div><p className="eyebrow">TheraPlan</p><h1>Adaptive physiotherapy you can actually complete.</h1></div><div className="actions"><a href="#intake" className="primary linkbutton">Create plan</a><a href="/login" className="linkbutton secondary">Sign in</a></div></header>{demoPlan ? <PlanOverview plan={demoPlan} /> : <div className="card"><h2>No demo plan found</h2><p className="muted">Apply the Supabase migration and seed data, then refresh.</p></div>}<div id="intake"><IntakeForm /></div></main>;
 }

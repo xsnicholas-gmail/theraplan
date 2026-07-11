@@ -123,6 +123,8 @@ body::before { content:""; position:fixed; inset:0; pointer-events:none; backgro
 .prompt-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
 .plain-list { margin:0; padding-left:1.1rem; color:var(--muted); line-height:1.7; }
 .plain-list strong { color:var(--ink); }
+.checkbox-line { display:flex; align-items:center; gap:10px; color:var(--muted); }
+.checkbox-line input { width:auto; margin:0; }
 .session-link span:first-child { width:max-content; padding:5px 9px; border-radius:999px; background:#eaf8ec; color:var(--brand); font-weight:900; }
 
 @media (max-width:900px) {

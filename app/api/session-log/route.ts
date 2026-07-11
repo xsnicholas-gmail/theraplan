@@ -18,8 +18,10 @@ export async function POST(request: Request) {
     const rows = sets.map((set: any) => ({ session_log_id: log.id, session_exercise_id: String(set.session_exercise_id), set_number: Number(set.set_number), reps_completed: Number(set.reps_completed), weight_kg: set.weight_kg === "" || set.weight_kg == null ? null : Number(set.weight_kg) }));
     const { error: setError } = await supabase.from("set_logs").insert(rows);
     if (setError) throw setError;
+    const { data: beforeSession } = await supabase.from("sessions").select("id,status").eq("id", sessionId).single();
     const { error: sessionError } = await supabase.from("sessions").update({ status: "done" }).eq("id", sessionId);
     if (sessionError) throw sessionError;
+    await supabase.from("audit_logs").insert({ actor_type: "user", action: "complete_session", object_type: "session", object_id: sessionId, before_json: beforeSession, after_json: { status: "done", session_log_id: log.id, perceived_effort: perceivedEffort, set_count: rows.length } });
     await adjustFutureTargets(sessionId, perceivedEffort);
     return NextResponse.json({ ok: true, sessionLogId: log.id });
   } catch (error) {
